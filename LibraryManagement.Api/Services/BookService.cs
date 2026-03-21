@@ -49,7 +49,7 @@ public class BookService : IBookService
         var book = await _context.Books.FindAsync(id);
 
         if (book == null)
-            return ServiceResult<BookResponse>.Fail("Book not found.");
+            return ServiceResult<BookResponse>.Fail("Book not found.", ServiceErrorType.NotFound);
 
         book.Title = request.Title;
         book.Author = request.Author;
@@ -62,17 +62,17 @@ public class BookService : IBookService
         return ServiceResult<BookResponse>.Ok(MapToResponse(book));
     }
 
-    public async Task<ServiceResult> DeleteAsync(int id)
+    public async Task<ServiceResult<bool>> DeleteAsync(int id)
     {
         var book = await _context.Books.FindAsync(id);
 
         if (book == null)
-            return ServiceResult.Fail("Book not found.");
+            return ServiceResult<bool>.Fail("Book not found.", ServiceErrorType.NotFound);
 
         _context.Books.Remove(book);
         await _context.SaveChangesAsync();
 
-        return ServiceResult.Ok();
+        return ServiceResult<bool>.Ok(true);
     }
 
     private static BookResponse MapToResponse(Book book) => new()

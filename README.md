@@ -1,9 +1,9 @@
 # Library Management System API
 
 A **RESTful Web API** built with **ASP.NET Core (.NET 8)** that allows users to manage books, members, and loans in a library system.
-The API supports full **CRUD operations** and uses **Entity Framework Core with SQLite** for data persistence.
+The API supports full **CRUD operations**, uses **Entity Framework Core with SQLite** for data persistence, and is secured with **JWT authentication**.
 
-This project demonstrates backend development with modern .NET technologies, clean API design, and a layered service architecture.
+This project demonstrates backend development with modern .NET technologies, clean API design, a layered service architecture, and a full test suite.
 
 ---
 
@@ -16,9 +16,20 @@ This project demonstrates backend development with modern .NET technologies, cle
 * Entity Framework Core
 * SQLite
 
+**Security**
+
+* JWT Bearer Authentication
+* BCrypt password hashing
+
+**Testing**
+
+* xUnit
+* WebApplicationFactory (integration tests)
+* In-memory database (unit tests)
+
 **Tools**
 
-* Swagger / OpenAPI
+* Swagger / OpenAPI (with JWT Bearer support)
 * .NET CLI
 
 ---
@@ -41,8 +52,18 @@ This project demonstrates backend development with modern .NET technologies, cle
 * Maximum 3 active loans per member
 * Full loan history per member
 
+**Authentication**
+* Register and login with email and password
+* JWT Bearer tokens protect all API endpoints
+* Passwords hashed with BCrypt
+
+**Tests**
+* 42 tests — unit and integration
+* Unit tests cover all service business rules
+* Integration tests cover all API endpoints end-to-end
+
 **General**
-* Swagger API documentation
+* Swagger UI with JWT Bearer support
 
 ---
 
@@ -52,6 +73,7 @@ This project demonstrates backend development with modern .NET technologies, cle
 LibraryManagement.Api
 │
 ├── Controllers
+│   ├── AuthController.cs
 │   ├── BooksController.cs
 │   ├── MembersController.cs
 │   └── LoansController.cs
@@ -68,6 +90,10 @@ LibraryManagement.Api
 │   │   ├── CreateMemberRequest.cs
 │   │   ├── UpdateMemberRequest.cs
 │   │   └── MemberResponse.cs
+│   ├── Auth
+│   │   ├── RegisterRequest.cs
+│   │   ├── LoginRequest.cs
+│   │   └── AuthResponse.cs
 │   └── Loans
 │       ├── CreateLoanRequest.cs
 │       └── LoanResponse.cs
@@ -75,10 +101,13 @@ LibraryManagement.Api
 ├── Models
 │   ├── Book.cs
 │   ├── Member.cs
-│   └── Loan.cs
+│   ├── Loan.cs
+│   └── User.cs
 │
 ├── Services
 │   ├── ServiceResult.cs
+│   ├── IAuthService.cs
+│   ├── AuthService.cs
 │   ├── IBookService.cs
 │   ├── BookService.cs
 │   ├── IMemberService.cs
@@ -94,6 +123,15 @@ LibraryManagement.Api
 ---
 
 # API Endpoints
+
+### Authentication
+
+| Method | Endpoint              | Description              | Auth required |
+| ------ | --------------------- | ------------------------ | ------------- |
+| POST   | `/api/auth/register`  | Register a new user      | No            |
+| POST   | `/api/auth/login`     | Login and receive a JWT  | No            |
+
+> All other endpoints require a valid JWT Bearer token.
 
 ### Books
 
@@ -125,6 +163,23 @@ LibraryManagement.Api
 | PUT    | `/api/loans/return/{loanId}`  | Return a book                |
 
 # Example Payloads
+
+### Register
+```json
+{
+  "email": "admin@library.com",
+  "password": "SecurePass123!",
+  "role": "Admin"
+}
+```
+
+### Login
+```json
+{
+  "email": "admin@library.com",
+  "password": "SecurePass123!"
+}
+```
 
 ### Create Book
 ```json
@@ -200,13 +255,20 @@ http://localhost:xxxx/swagger
 
 Swagger allows you to interactively test all API endpoints.
 
+To test protected endpoints in Swagger:
+1. Call `POST /api/auth/register` to create a user
+2. Call `POST /api/auth/login` to get a token
+3. Click the **Authorize** button and enter your token
+4. All subsequent requests will include the Bearer token
+
 ---
 
 # Future Improvements
 
-* Authentication and authorization (JWT)
-* Unit and integration tests
-* React frontend
+* React + TypeScript frontend
+* Angular frontend
+* Role-based authorization (Admin vs Member)
 * PostgreSQL or SQL Server support
+* Deployment (Railway / Render / Azure)
 
 ---

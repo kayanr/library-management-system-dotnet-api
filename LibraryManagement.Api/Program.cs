@@ -1,4 +1,5 @@
 using LibraryManagement.Api.Data;
+using LibraryManagement.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ var dbPath = Path.Combine(builder.Environment.ContentRootPath, "library.db");
 
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
+
+builder.Services.AddScoped<IMemberService, MemberService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,8 +1,10 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using LibraryManagement.Api.Data;
 using LibraryManagement.Api.DTOs.Loans;
 using LibraryManagement.Api.Models;
+using LibraryManagement.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +33,9 @@ public class LoansIntegrationTests : IClassFixture<WebApplicationFactory<Program
             });
         });
         _client = _factory.CreateClient();
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", TestJwtHelper.GenerateToken());
     }
 
     private async Task SeedDataAsync()

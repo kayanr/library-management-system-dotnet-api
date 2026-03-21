@@ -1,7 +1,9 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using LibraryManagement.Api.Data;
 using LibraryManagement.Api.DTOs.Members;
+using LibraryManagement.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,9 @@ public class MembersIntegrationTests : IClassFixture<WebApplicationFactory<Progr
                     options.UseInMemoryDatabase(dbName));
             });
         }).CreateClient();
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", TestJwtHelper.GenerateToken());
     }
 
     [Fact]

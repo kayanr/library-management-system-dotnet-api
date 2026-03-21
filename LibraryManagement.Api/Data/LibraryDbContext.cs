@@ -13,12 +13,18 @@ namespace LibraryManagement.Api.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<Loan> Loans { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Member>()
                 .HasIndex(m => m.Email)
                 .IsUnique();
+            
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+       
         }
     }
 }

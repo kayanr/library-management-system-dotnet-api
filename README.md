@@ -1,6 +1,6 @@
 # Library Management System API
 
-A **RESTful Web API** built with **ASP.NET Core (.NET 8)** that allows users to manage books and members in a library system.
+A **RESTful Web API** built with **ASP.NET Core (.NET 8)** that allows users to manage books, members, and loans in a library system.
 The API supports full **CRUD operations** and uses **Entity Framework Core with SQLite** for data persistence.
 
 This project demonstrates backend development with modern .NET technologies, clean API design, and a layered service architecture.
@@ -35,6 +35,12 @@ This project demonstrates backend development with modern .NET technologies, cle
 * Layered architecture — Controller → Service → Database
 * Structured error handling via `ServiceResult<T>`
 
+**Loans**
+* Borrow a book — enforces availability and membership rules
+* Return a book — updates availability automatically
+* Maximum 3 active loans per member
+* Full loan history per member
+
 **General**
 * Swagger API documentation
 
@@ -47,7 +53,8 @@ LibraryManagement.Api
 │
 ├── Controllers
 │   ├── BooksController.cs
-│   └── MembersController.cs
+│   ├── MembersController.cs
+│   └── LoansController.cs
 │
 ├── Data
 │   └── LibraryDbContext.cs
@@ -57,21 +64,27 @@ LibraryManagement.Api
 │   │   ├── CreateBookRequest.cs
 │   │   ├── UpdateBookRequest.cs
 │   │   └── BookResponse.cs
-│   └── Members
-│       ├── CreateMemberRequest.cs
-│       ├── UpdateMemberRequest.cs
-│       └── MemberResponse.cs
+│   ├── Members
+│   │   ├── CreateMemberRequest.cs
+│   │   ├── UpdateMemberRequest.cs
+│   │   └── MemberResponse.cs
+│   └── Loans
+│       ├── CreateLoanRequest.cs
+│       └── LoanResponse.cs
 │
 ├── Models
 │   ├── Book.cs
-│   └── Member.cs
+│   ├── Member.cs
+│   └── Loan.cs
 │
 ├── Services
 │   ├── ServiceResult.cs
 │   ├── IBookService.cs
 │   ├── BookService.cs
 │   ├── IMemberService.cs
-│   └── MemberService.cs
+│   ├── MemberService.cs
+│   ├── ILoanService.cs
+│   └── LoanService.cs
 │
 ├── Migrations
 ├── Program.cs
@@ -102,6 +115,15 @@ LibraryManagement.Api
 | PUT    | `/api/members/{id}` | Update a member     |
 | DELETE | `/api/members/{id}` | Delete a member     |
 
+### Loans
+
+| Method | Endpoint                      | Description                  |
+| ------ | ----------------------------- | ---------------------------- |
+| GET    | `/api/loans`                  | Get all loans                |
+| GET    | `/api/loans/member/{memberId}`| Get loans by member          |
+| POST   | `/api/loans/borrow`           | Borrow a book                |
+| PUT    | `/api/loans/return/{loanId}`  | Return a book                |
+
 # Example Payloads
 
 ### Create Book
@@ -121,6 +143,14 @@ LibraryManagement.Api
   "lastName": "Doe",
   "email": "jane.doe@example.com",
   "phone": "555-1234"
+}
+```
+
+### Borrow a Book
+```json
+{
+  "bookId": 1,
+  "memberId": 1
 }
 ```
 
@@ -174,7 +204,6 @@ Swagger allows you to interactively test all API endpoints.
 
 # Future Improvements
 
-* Loan / Borrowing feature — link members to books
 * Authentication and authorization (JWT)
 * Unit and integration tests
 * React frontend

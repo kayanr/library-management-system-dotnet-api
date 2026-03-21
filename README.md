@@ -1,9 +1,9 @@
 # Library Management System API
 
-A **RESTful Web API** built with **ASP.NET Core (.NET 8)** that allows users to manage books in a library system.
+A **RESTful Web API** built with **ASP.NET Core (.NET 8)** that allows users to manage books and members in a library system.
 The API supports full **CRUD operations** and uses **Entity Framework Core with SQLite** for data persistence.
 
-This project demonstrates backend development with modern .NET technologies and clean API design.
+This project demonstrates backend development with modern .NET technologies, clean API design, and a layered service architecture.
 
 ---
 
@@ -25,12 +25,17 @@ This project demonstrates backend development with modern .NET technologies and 
 
 # Features
 
-* Create new books
-* Retrieve all books
-* Retrieve a single book by ID
-* Update book information
-* Delete books
+**Books**
+* Full CRUD — create, retrieve, update, and delete books
 * Input validation using Data Annotations
+
+**Members**
+* Full CRUD — create, retrieve, update, and delete library members
+* Email uniqueness validation
+* Layered architecture — Controller → Service → Database
+* Structured error handling via `ServiceResult<T>`
+
+**General**
 * Swagger API documentation
 
 ---
@@ -41,50 +46,43 @@ This project demonstrates backend development with modern .NET technologies and 
 LibraryManagement.Api
 │
 ├── Controllers
-│   └── BooksController.cs
+│   ├── BooksController.cs
+│   └── MembersController.cs
 │
 ├── Data
 │   └── LibraryDbContext.cs
 │
+├── DTOs
+│   ├── Books
+│   │   ├── CreateBookRequest.cs
+│   │   ├── UpdateBookRequest.cs
+│   │   └── BookResponse.cs
+│   └── Members
+│       ├── CreateMemberRequest.cs
+│       ├── UpdateMemberRequest.cs
+│       └── MemberResponse.cs
+│
 ├── Models
-│   └── Book.cs
+│   ├── Book.cs
+│   └── Member.cs
+│
+├── Services
+│   ├── ServiceResult.cs
+│   ├── IBookService.cs
+│   ├── BookService.cs
+│   ├── IMemberService.cs
+│   └── MemberService.cs
 │
 ├── Migrations
-│
 ├── Program.cs
 └── appsettings.json
 ```
 
 ---
 
-# Book Model
-
-Each book contains the following fields:
-
-```
-Id
-Title
-Author
-ISBN
-PublicationYear
-Available
-```
-
-Example JSON:
-
-```json
-{
-  "title": "Clean Code",
-  "author": "Robert C. Martin",
-  "isbn": "9780132350884",
-  "publicationYear": 2008,
-  "available": true
-}
-```
-
----
-
 # API Endpoints
+
+### Books
 
 | Method | Endpoint          | Description       |
 | ------ | ----------------- | ----------------- |
@@ -93,6 +91,38 @@ Example JSON:
 | POST   | `/api/books`      | Create a new book |
 | PUT    | `/api/books/{id}` | Update a book     |
 | DELETE | `/api/books/{id}` | Delete a book     |
+
+### Members
+
+| Method | Endpoint            | Description         |
+| ------ | ------------------- | ------------------- |
+| GET    | `/api/members`      | Get all members     |
+| GET    | `/api/members/{id}` | Get member by ID    |
+| POST   | `/api/members`      | Create a new member |
+| PUT    | `/api/members/{id}` | Update a member     |
+| DELETE | `/api/members/{id}` | Delete a member     |
+
+# Example Payloads
+
+### Create Book
+```json
+{
+  "title": "Clean Code",
+  "author": "Robert C. Martin",
+  "isbn": "9780132350884",
+  "publicationYear": 2008
+}
+```
+
+### Create Member
+```json
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com",
+  "phone": "555-1234"
+}
+```
 
 ---
 
@@ -144,10 +174,10 @@ Swagger allows you to interactively test all API endpoints.
 
 # Future Improvements
 
-* Authentication and authorization
-* DTO layer for API responses
-* Service layer for business logic
-* Integration with React frontend
+* Loan / Borrowing feature — link members to books
+* Authentication and authorization (JWT)
+* Unit and integration tests
+* React frontend
 * PostgreSQL or SQL Server support
 
 ---
